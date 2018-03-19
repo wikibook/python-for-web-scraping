@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<meta charset="utf-8">
+<title>한국의 박물관</title>
+<style>
+html, body, #map { height: 100%; margin: 0; padding: 0; }
+</style>
+<div id="map"></div>
+<script>
+function initMap() {
+    // 지도를 초기화합니다.
+    var map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat: 35.7, lng: 137.7 },
+        zoom: 7
+    });
+    // InfoWindow 객체를 생성합니다.
+    var infowindow = new google.maps.InfoWindow();
+    // geojson 파일의 상대 URL을 지정합니다.
+    var geojsonUrl = './museums.geojson';
+    // geojson 파일을 읽어 들이고 출력합니다.
+    map.data.loadGeoJson(geojsonUrl);
+    // 마커를 클릭했을 때 실행할 이벤트를 등록합니다.
+    map.data.addListener('click', function(e) {
+        // 생성하고 박물관 이름(labe)을 추가합니다.
+        var h2 = document.createElement('h2');
+        h2.textContent = e.feature.getProperty('label');
+        // div 요소를 생성하고, h2 요소와 박물관 주소(address)를 추가합니다.
+        var div = document.createElement('div');
+        div.appendChild(h2);
+        div.appendChild(document.createTextNode('주소: ' + e.feature.getProperty('address')));
+        // InfoWindow에 출력할 내용으로 div 요소를 지정합니다.
+        infowindow.setContent(div);
+        // 출력 위치로 마커의 위치를 지정합니다.
+        infowindow.setPosition(e.feature.getGeometry().get());
+        // 지정한 지점에서 38픽셀 위에 출력하게 합니다.
+        infowindow.setOptions({pixelOffset: new google.maps.Size(0, -38)});
+        // InfoWindow를 출력합니다.
+        infowindow.open(map);
+    });
+}
+</script>
+<!-- Google Maps JavaScript API 스크립트를 읽어 들입니다. 완료했을 때 initMap() 함수를 호출합니다. -->
+<script async defer src="https://maps.googleapis.com/maps/api/js?callback=initMap"></script>
